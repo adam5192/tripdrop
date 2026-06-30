@@ -13,6 +13,7 @@ export class DashboardView {
                     <h3>${trip.name}</h3>
                     <h3>${trip.start}-${trip.end}</h3>
                     <!-- whatever else -->
+                    <button class="delete-btn" data-id="${trip.id}">Delete</button>
                     -----------------------------
                 </div>
             `;
@@ -21,5 +22,15 @@ export class DashboardView {
 
     this._parentEl.innerHTML = ""; // clear old content
     this._parentEl.insertAdjacentHTML("beforeend", html);
+  }
+
+  addDeleteHandler(handler) {
+    this._parentEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".delete-btn");
+      if (!btn) return;
+
+      const id = btn.dataset.id;
+      handler(id);
+    });
   }
 }

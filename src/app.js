@@ -17,11 +17,20 @@ export class App {
     // Render the dashboard with this.trips
     this._dashboard.render(this.trips);
     this._form.addHandler(this._addTrip.bind(this));
+    this._dashboard.addDeleteHandler(this._removeTrip.bind(this));
   }
 
   _addTrip(data) {
     const trip = new Trip(data.name, data.destination, data.start, data.end);
     this.trips.push(trip);
+    save(this.trips);
+    this._dashboard.render(this.trips);
+  }
+
+  _removeTrip(tripID) {
+    console.log(tripID);
+    this.trips = this.trips.filter((t) => t.id !== Number(tripID));
+    console.log(this.trips);
     save(this.trips);
     this._dashboard.render(this.trips);
   }
