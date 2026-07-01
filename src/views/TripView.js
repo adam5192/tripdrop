@@ -24,6 +24,7 @@ export class TripView {
                     <p>${activity.city}</p>
                     <p>${activity.rating}</p>
                     <p>${activity.notes}</p>
+                    <button class="delete-act-btn" data-id="${activity.id}">Delete</button>
                     -----------------------
                 </div>`;
                 })
@@ -60,6 +61,17 @@ export class TripView {
   addBackHandler(handler) {
     this._parentEl.addEventListener("click", (e) => {
       if (e.target.closest(".back-btn")) handler();
+    });
+  }
+
+  addDeleteHandler(handler) {
+    this._parentEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      const btn = e.target.closest(".delete-act-btn");
+      if (!btn) return;
+
+      const id = btn.dataset.id;
+      handler(id);
     });
   }
 

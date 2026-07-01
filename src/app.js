@@ -23,6 +23,7 @@ export class App {
     this._dashboard.addOpenHandler(this._openTrip.bind(this));
     this._tripView.addBackHandler(this._goHome.bind(this));
     this._tripView.addActivityHandler(this._addActivitySubmit.bind(this));
+    this._tripView.addDeleteHandler(this._removeActivity.bind(this));
   }
 
   _addTrip(data) {
@@ -54,6 +55,14 @@ export class App {
       data.notes,
     );
     this._activeTrip.addActivity(act);
+    save(this.trips);
+    this._tripView.render(this._activeTrip);
+  }
+
+  _removeActivity(actID) {
+    this._activeTrip.activities = this._activeTrip.activities.filter(
+      (a) => a.id !== Number(actID),
+    );
     save(this.trips);
     this._tripView.render(this._activeTrip);
   }
