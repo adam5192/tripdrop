@@ -22,6 +22,7 @@ export class App {
     this._dashboard.addDeleteHandler(this._removeTrip.bind(this));
     this._dashboard.addOpenHandler(this._openTrip.bind(this));
     this._tripView.addBackHandler(this._goHome.bind(this));
+    this._tripView.addActivityHandler(this._addActivitySubmit.bind(this));
   }
 
   _addTrip(data) {
@@ -39,8 +40,22 @@ export class App {
   }
 
   _openTrip(tripID) {
-    const trip = this.trips.find((t) => t.id === Number(tripID));
-    this._tripView.render(trip);
+    this._activeTrip = this.trips.find((t) => t.id === Number(tripID));
+    this._tripView.render(this._activeTrip);
+  }
+
+  _addActivitySubmit(data) {
+    console.log(data);
+    const act = new Activity(
+      data.type,
+      data.name,
+      data.city,
+      Number(data.rating),
+      data.notes,
+    );
+    this._activeTrip.addActivity(act);
+    save(this.trips);
+    this._tripView.render(this._activeTrip);
   }
 
   _goHome() {
