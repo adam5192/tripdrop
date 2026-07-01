@@ -1,5 +1,7 @@
 "use strict";
 
+import { formatDate } from "../helpers/utils";
+
 export class DashboardView {
   constructor() {
     this._parentEl = document.querySelector("#app");
@@ -10,11 +12,12 @@ export class DashboardView {
       .map((trip) => {
         return `
                 <div class="trip-card" data-id="${trip.id}">
-                    <h3>${trip.name}</h3>
-                    <h3>${trip.start}-${trip.end}</h3>
-                    <!-- whatever else -->
-                    <button class="delete-btn" data-id="${trip.id}">Delete</button>
-                    -----------------------------
+                    <div class="trip-card__header">
+                        <h3 class="trip-card__name">${trip.name}</h3>
+                        <h3 class="trip-card__count">${trip.activities.length} activities</h3>
+                    </div>
+                    <p class="trip-card__dates">${formatDate(trip.start)} - ${formatDate(trip.end)}</p>
+                    <button class="trip-card__delete delete-btn" data-id="${trip.id}">Delete</button>
                 </div>
             `;
       })

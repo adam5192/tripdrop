@@ -18,20 +18,25 @@ export class TripView {
             ? "<p>No activities yet</p>"
             : trip.activities
                 .map((activity) => {
-                  return `<div class="activity-card" data-id="${activity.id}">
-                    <p>${activity.name}</p>
-                    <p>${activity.type}</p>
-                    <p>${activity.city}</p>
-                    <p>${activity.rating}</p>
-                    <p>${activity.notes}</p>
-                    <button class="delete-act-btn" data-id="${activity.id}">Delete</button>
-                    -----------------------
+                  return `
+                  <div class="activity-card" data-id="${activity.id}">
+                    <div class="activity-card__header">
+                        <span class="activity-card__name">${activity.name}</span>
+                        <span class="activity-card__type">${activity.type}</span>
+                    </div>
+                    <div class="activity-card__meta">
+                        <span class="activity-card__city">${activity.city}</span>
+                        <span class="activity-card__rating">${"★".repeat(activity.rating)}</span>
+                    </div>
+                    ${activity.notes ? `<p class="activity-card__notes">${activity.notes}</p>` : ""}
+                    <button class="activity-card__delete delete-act-btn" data-id="${activity.id}">Delete</button>
                 </div>`;
                 })
                 .join("")
         }
+    </div>
 
-      <form id="activity-form">
+    <form id="activity-form">
         <select name="type" id="activity-type">
             <option value="Food">Food</option>
             <option value="Attraction">Attraction</option>
@@ -50,9 +55,7 @@ export class TripView {
         </select>
         <input type="text" id="activity-notes" placeholder='notes' />
         <button type="submit" class='add-act-btn'>Add activity</button>
-      </form>
-    </div>
-
+    </form>
     `;
     this._parentEl.innerHTML = "";
     this._parentEl.insertAdjacentHTML("beforeend", html);
@@ -66,10 +69,10 @@ export class TripView {
 
   addDeleteHandler(handler) {
     this._parentEl.addEventListener("click", (e) => {
-      e.preventDefault();
       const btn = e.target.closest(".delete-act-btn");
       if (!btn) return;
 
+      e.preventDefault();
       const id = btn.dataset.id;
       handler(id);
     });
@@ -87,6 +90,7 @@ export class TripView {
       const notes = document.querySelector("#activity-notes").value;
 
       handler({ type, name, city, rating, notes });
+      console.log("added");
 
       document.querySelector("#activity-form").reset();
     });
