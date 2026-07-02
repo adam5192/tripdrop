@@ -5,6 +5,7 @@ import { save, load } from "./data/store.js";
 import { DashboardView } from "./views/DashboardView.js";
 import { FormView } from "./views/FormView.js";
 import { TripView } from "./views/TripView.js";
+import { MapView } from "./views/MapView.js";
 
 export class App {
   constructor() {
@@ -12,6 +13,7 @@ export class App {
     this._dashboard = new DashboardView();
     this._form = new FormView();
     this._tripView = new TripView();
+    this._mapView = new MapView();
     this._init();
   }
 
@@ -43,6 +45,7 @@ export class App {
   _openTrip(tripID) {
     this._activeTrip = this.trips.find((t) => t.id === Number(tripID));
     this._tripView.render(this._activeTrip);
+    this._mapView.render();
   }
 
   _addActivitySubmit(data) {

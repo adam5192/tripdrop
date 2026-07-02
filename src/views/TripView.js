@@ -10,6 +10,7 @@ export class TripView {
     <button class="back-btn">Back</button>
     <h2>${trip.name}</h2>
     <p>${trip.destination}</p>
+    <div id="map"></div>
 
     <h3>Activities</h3>
     <div class="activity-list">
