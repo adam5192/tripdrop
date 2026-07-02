@@ -19,6 +19,7 @@ export function load() {
       plain.destination,
       plain.start,
       plain.end,
+      plain.countryCode,
       plain.status,
     );
     trip.id = plain.id;

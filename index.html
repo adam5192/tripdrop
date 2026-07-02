@@ -10,7 +10,16 @@
   <body>
     <form id="trip-form">
       <input type="text" id="trip-name" placeholder="Trip name" />
-      <input type="text" id="trip-destination" placeholder="Destination" />
+      <!-- <input type="text" id="trip-destination" placeholder="Destination" /> -->
+      <div class="search-wrap">
+        <input
+          type="text"
+          id="trip-destination"
+          placeholder="Search country..."
+        />
+        <button type="button" id="dest-search-btn">Search</button>
+        <ul id="dest-results" class="search-results"></ul>
+      </div>
       <input type="date" id="trip-start" />
       <input type="date" id="trip-end" />
       <button type="submit">Add trip</button>

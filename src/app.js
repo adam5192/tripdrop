@@ -29,7 +29,13 @@ export class App {
   }
 
   _addTrip(data) {
-    const trip = new Trip(data.name, data.destination, data.start, data.end);
+    const trip = new Trip(
+      data.name,
+      data.destination,
+      data.start,
+      data.end,
+      data.countryCode,
+    );
     this.trips.push(trip);
     save(this.trips);
     this._dashboard.render(this.trips);

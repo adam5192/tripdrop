@@ -272,3 +272,30 @@ input::placeholder {
   border-radius: var(-radius);
   margin-bottom: 1.5rem;
 }
+
+/* ---- Search results list ---- */
+
+.search-wrap {
+  position: relative;
+  flex-basis: 100%;
+}
+
+.search-results {
+  list-style: none;
+  margin-top: 0.5rem;
+}
+
+.search-results li {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.4rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: border-color 0.15s;
+}
+
+.search-results li:hover {
+  border-color: var(--accent);
+}
