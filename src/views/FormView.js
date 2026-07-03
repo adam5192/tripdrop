@@ -1,5 +1,6 @@
 "use strict";
 import { searchPlaces } from "../data/geocode.js";
+import { COUNTRIES } from "../data/countries.js";
 
 export class FormView {
   constructor() {
@@ -12,32 +13,25 @@ export class FormView {
 
   _addSearchHandler() {
     const input = document.querySelector("#trip-destination");
-    let timer;
 
     input.addEventListener("input", () => {
-      clearTimeout(timer);
-
-      const query = input.value;
+      const query = input.value.toLowerCase();
       if (!query) {
         this._destResults.innerHTML = "";
         return;
       }
 
-      timer = setTimeout(async () => {
-        const results = await searchPlaces(query);
-        const countriesOnly = results.filter(
-          (r) => r.addresstype === "country",
-        );
-        this._renderResults(countriesOnly);
-      }, 500);
+      const matches = COUNTRIES.filter((c) =>
+        c.name.toLowerCase().startsWith(query),
+      ).slice(0, 5);
+
+      this._renderResults(matches);
     });
   }
 
   _renderResults(results) {
     this._destResults.innerHTML = results
-      .map((r) => {
-        return `<li data-lat="${r.lat}" data-lon="${r.lon}" data-country="${r.address.country_code}">${r.display_name}</li>`;
-      })
+      .map((c) => `<li data-country="${c.code}">${c.name}</li>`)
       .join("");
 
     this._destResults.addEventListener("click", (e) => {

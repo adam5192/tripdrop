@@ -1,8 +1,8 @@
-export async function searchPlaces(query, countryCode = "") {
+export async function searchPlaces(query, countryOnly = false) {
   let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`;
 
-  if (countryCode) {
-    url += `&countrycodes=${countryCode}`;
+  if (countryOnly) {
+    url += `&feautureType=country`;
   }
 
   const res = await fetch(url);
