@@ -1,11 +1,16 @@
 "use strict";
 
+import { searchPlaces } from "../data/geocode";
+
 export class TripView {
   constructor() {
     this._parentEl = document.querySelector("#app");
+    this._countryCode = "";
+    this._addActivitySearchHandler();
   }
 
   render(trip) {
+    this._countryCode = trip.countryCode;
     const html = `
     <button class="back-btn">Back</button>
     <h2>${trip.name}</h2>
@@ -38,6 +43,10 @@ export class TripView {
     </div>
 
     <form id="activity-form">
+        <div class="search-wrap">
+            <input type="text" id="activity-search" placeholder="Search a place..." autocomplete="off" />
+            <ul id="activity-results" class="search results"></ul>
+        </div>
         <select name="type" id="activity-type">
             <option value="Food">Food</option>
             <option value="Attraction">Attraction</option>
@@ -94,6 +103,31 @@ export class TripView {
       console.log("added");
 
       document.querySelector("#activity-form").reset();
+    });
+  }
+
+  _addActivitySearchHandler() {
+    let timer;
+
+    this._parentEl.addEventListener("input", (e) => {
+      if (e.target.id !== "activity-search") return; // only react to the search box
+
+      clearTimeout(timer);
+      const query = e.target.value;
+      if (!query) {
+        document.querySelector("#activity-results").innerHTML = "";
+        return;
+      }
+
+      timer = setTimeout(async () => {
+        const results = await searchPlaces(query, false, this._countryCode);
+        document.querySelector("#activity-results").innerHTML = results
+          .map(
+            (r) =>
+              `<li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}">${r.display_name}</li>`,
+          )
+          .join("");
+      }, 1000);
     });
   }
 }
