@@ -7,6 +7,7 @@ export class TripView {
     this._parentEl = document.querySelector("#app");
     this._countryCode = "";
     this._addActivitySearchHandler();
+    this._addResultClickHandler();
   }
 
   render(trip) {
@@ -99,7 +100,7 @@ export class TripView {
       const rating = document.querySelector("#activity-rating").value;
       const notes = document.querySelector("#activity-notes").value;
 
-      handler({ type, name, city, rating, notes });
+      handler({ type, name, city, rating, notes, coords: this._pickedCoords });
       console.log("added");
 
       document.querySelector("#activity-form").reset();
@@ -127,7 +128,23 @@ export class TripView {
               `<li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}">${r.display_name}</li>`,
           )
           .join("");
-      }, 1000);
+      }, 500);
+    });
+  }
+
+  _addResultClickHandler() {
+    this._parentEl.addEventListener("click", (e) => {
+      const li = e.target.closest("#activity-results li");
+      if (!li) return;
+
+      // fill name field
+      document.querySelector("#activity-name").value = li.dataset.name;
+
+      // store coords for when activity is saved
+      this._pickedCoords = [Number(li.dataset.lat), Number(li.dataset.lon)];
+
+      // clear results list
+      document.querySelector("#activity-results").innerHTML = "";
     });
   }
 }

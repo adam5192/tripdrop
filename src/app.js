@@ -55,7 +55,6 @@ export class App {
   }
 
   _addActivitySubmit(data) {
-    console.log(data);
     const act = new Activity(
       data.type,
       data.name,
@@ -63,9 +62,11 @@ export class App {
       Number(data.rating),
       data.notes,
     );
+    act.coords = data.coords || null;
     this._activeTrip.addActivity(act);
     save(this.trips);
     this._tripView.render(this._activeTrip);
+    this._mapView.render();
   }
 
   _removeActivity(actID) {
