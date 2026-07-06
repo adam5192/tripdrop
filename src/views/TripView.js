@@ -49,6 +49,7 @@ export class TripView {
             <ul id="activity-results" class="search results"></ul>
         </div>
         <select name="type" id="activity-type">
+            <option value="" selected disabled>Activity type</option>
             <option value="Food">Food</option>
             <option value="Attraction">Attraction</option>
             <option value="Hike">Hike</option>
@@ -58,6 +59,7 @@ export class TripView {
         <input type="text" id="activity-name" placeholder="Activity" />
         <input type="text" id="activity-city" placeholder="City" />
         <select name="rating" id="activity-rating">
+            <option value="" selected disabled>Select a rating</option>
             <option value="1">1★</option>
             <option value="2">2★</option>
             <option value="3">3★</option>
