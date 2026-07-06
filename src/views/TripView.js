@@ -123,10 +123,15 @@ export class TripView {
       timer = setTimeout(async () => {
         const results = await searchPlaces(query, false, this._countryCode);
         document.querySelector("#activity-results").innerHTML = results
-          .map(
-            (r) =>
-              `<li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}">${r.display_name}</li>`,
-          )
+          .map((r) => {
+            const city =
+              r.address.city ||
+              r.address.town ||
+              r.address.village ||
+              r.address.municipality ||
+              "";
+            return `<li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}" data-city="${city}">${r.display_name}</li>`;
+          })
           .join("");
       }, 500);
     });
@@ -139,6 +144,7 @@ export class TripView {
 
       // fill name field
       document.querySelector("#activity-name").value = li.dataset.name;
+      document.querySelector("#activity-city").value = li.dataset.city;
 
       // store coords for when activity is saved
       this._pickedCoords = [Number(li.dataset.lat), Number(li.dataset.lon)];

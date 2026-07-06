@@ -76,6 +76,7 @@ export class App {
     );
     save(this.trips);
     this._tripView.render(this._activeTrip);
+    this._mapView.render(this._activeTrip.activities);
   }
 
   _goHome() {
