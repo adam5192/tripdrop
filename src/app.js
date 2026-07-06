@@ -51,7 +51,8 @@ export class App {
   _openTrip(tripID) {
     this._activeTrip = this.trips.find((t) => t.id === Number(tripID));
     this._tripView.render(this._activeTrip);
-    this._mapView.render();
+    console.log(this._activeTrip.activities);
+    this._mapView.render(this._activeTrip.activities);
   }
 
   _addActivitySubmit(data) {
@@ -66,7 +67,7 @@ export class App {
     this._activeTrip.addActivity(act);
     save(this.trips);
     this._tripView.render(this._activeTrip);
-    this._mapView.render();
+    this._mapView.render(this._activeTrip.activities);
   }
 
   _removeActivity(actID) {

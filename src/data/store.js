@@ -32,6 +32,8 @@ export function load() {
         act.notes,
       );
       newAct.id = act.id;
+      newAct.coords = act.coords;
+      newAct.date = act.date;
       trip.addActivity(newAct);
     });
     return trip;

@@ -3,6 +3,13 @@ import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
+const DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconAnchor: [12, 41],
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
 export class MapView {
   constructor() {
     this._map = null;
@@ -15,9 +22,12 @@ export class MapView {
       this._map = null;
     }
     this._map = L.map("map");
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
-    }).addTo(this._map);
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      {
+        attribution: "© OpenStreetMap contributors © CARTO",
+      },
+    ).addTo(this._map);
 
     // drop pins for activities that have coords
     const withCoords = activities.filter((a) => a.coords);
@@ -31,6 +41,12 @@ export class MapView {
       // fit map to show all pins
       const bounds = withCoords.map((a) => a.coords);
       this._map.fitBounds(bounds, { padding: [50, 50] });
+    } else if (countryCoords) {
+      // no pins yet: center on country
+      this._map.setView(countryCoords, 5);
+    } else {
+      //fallback
+      this._map.setView([20, 0], 2);
     }
   }
 }
