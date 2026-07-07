@@ -11,7 +11,7 @@ export class FormView {
     this._addSearchHandler();
   }
 
-  showError(message) {
+  showError(message, type = 0) {
     document.querySelector("#trip-form-error").textContent = message;
   }
 

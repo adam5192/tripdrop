@@ -69,6 +69,7 @@ export class TripView {
         <input type="text" id="activity-notes" placeholder='notes' />
         <button type="submit" class='add-act-btn'>Add activity</button>
     </form>
+    <p id="activity-form-error" class="form-error"></p>
     `;
     this._parentEl.innerHTML = "";
     this._parentEl.insertAdjacentHTML("beforeend", html);

@@ -73,6 +73,12 @@ export class App {
   }
 
   _addActivitySubmit(data) {
+    if (!data.name.trim()) {
+      document.querySelector("#activity-form-error").textContent =
+        "Please enter an activity!";
+      return;
+    }
+
     const act = new Activity(
       data.type,
       data.name,
