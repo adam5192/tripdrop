@@ -368,3 +368,24 @@ input::placeholder {
   font-style: italic;
   list-style: none;
 }
+
+/* ---- Edit mode ---- */
+
+.edit-name-input {
+  flex: 1;
+  min-width: 0;
+}
+.edit-btn,
+.save-edit-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.save-edit-btn {
+  color: var(--accent);
+  border-color: var(--accent);
+}

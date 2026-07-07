@@ -6,6 +6,7 @@ export class TripView {
   constructor() {
     this._parentEl = document.querySelector("#app");
     this._countryCode = "";
+    this._editingId = null;
     this._addActivitySearchHandler();
     this._addResultClickHandler();
   }
@@ -25,10 +26,22 @@ export class TripView {
             ? "<p>No activities yet</p>"
             : trip.activities
                 .map((activity) => {
+                  const isEditing = activity.id === this._editingId;
+
+                  const nameHtml = isEditing
+                    ? `
+                  <input class="edit-name-input" value="${activity.name}" data-id="${activity.id}">
+                  <button class="save-edit-btn" data-id="${activity.id}">Save</button>
+                  `
+                    : `
+                  <span class="activity-card__name">${activity.name}</span>
+                  <button class="edit-btn" data-id="${activity.id}">Edit</button>
+                  `;
+
                   return `
                   <div class="activity-card" data-id="${activity.id}">
                     <div class="activity-card__header">
-                        <span class="activity-card__name">${activity.name}</span>
+                        ${nameHtml}
                         <span class="activity-card__type">${activity.type}</span>
                     </div>
                     <div class="activity-card__meta">
@@ -89,6 +102,28 @@ export class TripView {
       e.preventDefault();
       const id = btn.dataset.id;
       handler(id);
+    });
+  }
+
+  addEditHandler(handler) {
+    this._parentEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".edit-btn");
+      if (!btn) return;
+      this._editingId = Number(btn.dataset.id);
+      handler(); // app will re-render
+    });
+  }
+
+  addSaveEditHandler(handler) {
+    this._parentEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".save-edit-btn");
+      if (!btn) return;
+
+      const id = Number(btn.dataset.id);
+      const newName = document.querySelector(".edit-name-input").value;
+
+      this._editingId = null; // exit editing mode
+      handler(id, newName);
     });
   }
 
