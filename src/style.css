@@ -389,3 +389,25 @@ input::placeholder {
   color: var(--accent);
   border-color: var(--accent);
 }
+
+.activity-card--editing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-left-color: #ffc94d;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cancel-edit-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}

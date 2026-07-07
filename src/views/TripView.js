@@ -28,29 +28,47 @@ export class TripView {
                 .map((activity) => {
                   const isEditing = activity.id === this._editingId;
 
-                  const nameHtml = isEditing
-                    ? `
-                  <input class="edit-name-input" value="${activity.name}" data-id="${activity.id}">
-                  <button class="save-edit-btn" data-id="${activity.id}">Save</button>
-                  `
-                    : `
-                  <span class="activity-card__name">${activity.name}</span>
-                  <button class="edit-btn" data-id="${activity.id}">Edit</button>
-                  `;
+                  if (isEditing) {
+                    return `
+        <div class="activity-card activity-card--editing" data-id="${activity.id}">
+          <input class="edit-name" value="${activity.name}" placeholder="Name" />
+
+          <select class="edit-type">
+            <option value="" selected disabled>Activity type</option>
+            <option value="Food" ${activity.type === "Food" ? "selected" : ""}>Food</option>
+            <option value="Attraction" ${activity.type === "Attraction" ? "selected" : ""}>Attraction</option>
+            <option value="Hike" ${activity.type === "Hike" ? "selected" : ""}>Hike</option>
+            <option value="Activity" ${activity.type === "Activity" ? "selected" : ""}>Activity</option>
+            <option value="Other" ${activity.type === "Other" ? "selected" : ""}>Other</option>
+          </select>
+
+          <select class="edit-rating">
+            ${[1, 2, 3, 4, 5].map((n) => `<option value="${n}" ${activity.rating === n ? "selected" : ""}>${n}★</option>`).join("")}
+          </select>
+
+          <input class="edit-notes" value="${activity.notes}" placeholder="Notes" />
+
+          <div class="edit-actions">
+            <button class="save-edit-btn" data-id="${activity.id}">Save</button>
+            <button class="cancel-edit-btn">Cancel</button>
+          </div>
+        </div>`;
+                  }
 
                   return `
-                  <div class="activity-card" data-id="${activity.id}">
-                    <div class="activity-card__header">
-                        ${nameHtml}
-                        <span class="activity-card__type">${activity.type}</span>
-                    </div>
-                    <div class="activity-card__meta">
-                        <span class="activity-card__city">${activity.city}</span>
-                        <span class="activity-card__rating">${"★".repeat(activity.rating)}</span>
-                    </div>
-                    ${activity.notes ? `<p class="activity-card__notes">${activity.notes}</p>` : ""}
-                    <button class="activity-card__delete delete-act-btn" data-id="${activity.id}">Delete</button>
-                </div>`;
+      <div class="activity-card" data-id="${activity.id}">
+        <div class="activity-card__header">
+          <span class="activity-card__name">${activity.name}</span>
+          <span class="activity-card__type">${activity.type}</span>
+        </div>
+        <div class="activity-card__meta">
+          <span class="activity-card__city">${activity.city}</span>
+          <span class="activity-card__rating">${"★".repeat(activity.rating)}</span>
+        </div>
+        ${activity.notes ? `<p class="activity-card__notes">${activity.notes}</p>` : ""}
+        <button class="edit-btn" data-id="${activity.id}">Edit</button>
+        <button class="activity-card__delete delete-act-btn" data-id="${activity.id}">Delete</button>
+      </div>`;
                 })
                 .join("")
         }
@@ -120,10 +138,23 @@ export class TripView {
       if (!btn) return;
 
       const id = Number(btn.dataset.id);
-      const newName = document.querySelector(".edit-name-input").value;
+      const updated = {
+        name: document.querySelector(".edit-name").value,
+        type: document.querySelector(".edit-type").value,
+        rating: Number(document.querySelector(".edit-rating").value),
+        notes: document.querySelector(".edit-notes").value,
+      };
 
-      this._editingId = null; // exit editing mode
-      handler(id, newName);
+      this._editingId = null;
+      handler(id, updated);
+    });
+  }
+
+  addCancelEditHandler(handler) {
+    this._parentEl.addEventListener("click", (e) => {
+      if (!e.target.closest(".cancel-edit-btn")) return;
+      this._editingId = null;
+      handler(); // re-render, exiting edit mode
     });
   }
 

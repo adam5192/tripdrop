@@ -28,6 +28,7 @@ export class App {
     this._tripView.addDeleteHandler(this._removeActivity.bind(this));
     this._tripView.addEditHandler(this._rerenderTrip.bind(this));
     this._tripView.addSaveEditHandler(this._saveActivityEdit.bind(this));
+    this._tripView.addCancelEditHandler(this._rerenderTrip.bind(this));
   }
 
   _addTrip(data) {
@@ -107,9 +108,14 @@ export class App {
     this._mapView.render(this._activeTrip.activities);
   }
 
-  _saveActivityEdit(id, newName) {
+  _saveActivityEdit(id, updated) {
     const activity = this._activeTrip.activities.find((a) => a.id === id);
-    activity.name = newName;
+
+    activity.name = updated.name;
+    activity.type = updated.type;
+    activity.rating = updated.rating;
+    activity.notes = updated.notes;
+
     save(this.trips);
     this._tripView.render(this._activeTrip);
     this._mapView.render(this._activeTrip.activities);
