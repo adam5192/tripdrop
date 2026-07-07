@@ -104,7 +104,6 @@ export class TripView {
       const notes = document.querySelector("#activity-notes").value;
 
       handler({ type, name, city, rating, notes, coords: this._pickedCoords });
-      console.log("added");
 
       document.querySelector("#activity-form").reset();
     });
@@ -124,18 +123,29 @@ export class TripView {
       }
 
       timer = setTimeout(async () => {
-        const results = await searchPlaces(query, false, this._countryCode);
-        document.querySelector("#activity-results").innerHTML = results
-          .map((r) => {
-            const city =
-              r.address.city ||
-              r.address.town ||
-              r.address.village ||
-              r.address.municipality ||
-              "";
-            return `<li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}" data-city="${city}">${r.display_name}</li>`;
-          })
-          .join("");
+        const resultsEl = document.querySelector("#activity-results");
+        try {
+          const results = await searchPlaces(query, false, this._countryCode);
+          if (results.length === 0) {
+            resultsEl.innerHTML = `<li class="search-message">No places found</li>`;
+            return;
+          }
+
+          resultsEl.innerHTML = results
+            .map((r) => {
+              const city =
+                r.address.city ||
+                r.address.town ||
+                r.address.village ||
+                r.address.municipality ||
+                "";
+              return `<li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}" data-city="${city}">${r.display_name}</li>`;
+            })
+            .join("");
+        } catch (err) {
+          resultsEl.innerHTML = `<li class="search-message">Search failed - try again</li>`;
+          console.log("Search error:", err);
+        }
       }, 500);
     });
   }
@@ -143,7 +153,7 @@ export class TripView {
   _addResultClickHandler() {
     this._parentEl.addEventListener("click", (e) => {
       const li = e.target.closest("#activity-results li");
-      if (!li) return;
+      if (!li || li.classList.contains("search-message")) return; // dont read click on error
 
       // fill name field
       document.querySelector("#activity-name").value = li.dataset.name;

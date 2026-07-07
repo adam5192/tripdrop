@@ -48,7 +48,6 @@ export class FormView {
 
       document.querySelector("#trip-destination").value = li.textContent;
       this._selectedCountry = li.dataset.country;
-      console.log(this._selectedCountry);
       this._destResults.innerHTML = ""; // clear list
     });
   }

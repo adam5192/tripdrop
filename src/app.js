@@ -60,7 +60,6 @@ export class App {
 
   _removeTrip(tripID) {
     this.trips = this.trips.filter((t) => t.id !== Number(tripID));
-    console.log(this.trips);
     save(this.trips);
     this._dashboard.render(this.trips);
   }
@@ -68,7 +67,6 @@ export class App {
   _openTrip(tripID) {
     this._activeTrip = this.trips.find((t) => t.id === Number(tripID));
     this._tripView.render(this._activeTrip);
-    console.log(this._activeTrip.activities);
     this._mapView.render(this._activeTrip.activities);
   }
 

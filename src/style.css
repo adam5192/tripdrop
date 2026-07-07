@@ -300,10 +300,23 @@ input::placeholder {
   border-color: var(--accent);
 }
 
+/* ---- Error handling ---- */
+
 .form-error {
   color: var(--danger);
   font-size: 0.85rem;
-  min-height: 1.2rem; /* reserves space so layout doesn't jump */
+  min-height: 1.2rem;
   margin-top: -0.5rem;
   margin-bottom: 1rem;
+}
+
+.search-message {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  list-style: none;
 }
