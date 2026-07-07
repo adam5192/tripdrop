@@ -46,7 +46,7 @@ export class TripView {
     <form id="activity-form">
         <div class="search-wrap">
             <input type="text" id="activity-search" placeholder="Search a place..." autocomplete="off" />
-            <ul id="activity-results" class="search results"></ul>
+            <ul id="activity-results" class="search-results"></ul>
         </div>
         <select name="type" id="activity-type">
             <option value="" selected disabled>Activity type</option>
@@ -139,7 +139,14 @@ export class TripView {
                 r.address.village ||
                 r.address.municipality ||
                 "";
-              return `<li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}" data-city="${city}">${r.display_name}</li>`;
+              const name = r.display_name.split(",")[0];
+              const rest = r.display_name.split(",").slice(1).join(",").trim();
+              return `
+              <li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}" data-city="${city}">
+                <span class="result-name">${name}</span>
+                <span class="result-address">${rest}</span>
+              </li>
+              `;
             })
             .join("");
         } catch (err) {
