@@ -299,3 +299,11 @@ input::placeholder {
 .search-results li:hover {
   border-color: var(--accent);
 }
+
+.form-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  min-height: 1.2rem; /* reserves space so layout doesn't jump */
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}

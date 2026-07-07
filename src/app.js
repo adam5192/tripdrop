@@ -29,6 +29,23 @@ export class App {
   }
 
   _addTrip(data) {
+    // Clear previous errors
+    this._form.clearError();
+
+    if (!data.name.trim()) {
+      this._form.showError("Please enter a trip name");
+      return;
+    }
+    if (!data.start || !data.end) {
+      this._form.showError("Please select both start and end dates");
+      returnl;
+    }
+    if (new Date(data.end) < new Date(data.start)) {
+      this._form.showError("End data can't be before start date!");
+      return;
+    }
+
+    // Create trip once validation passed
     const trip = new Trip(
       data.name,
       data.destination,

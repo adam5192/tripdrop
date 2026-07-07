@@ -11,6 +11,14 @@ export class FormView {
     this._addSearchHandler();
   }
 
+  showError(message) {
+    document.querySelector("#trip-form-error").textContent = message;
+  }
+
+  clearError() {
+    document.querySelector("#trip-form-error").textContent = "";
+  }
+
   _addSearchHandler() {
     const input = document.querySelector("#trip-destination");
 
