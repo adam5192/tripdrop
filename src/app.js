@@ -29,9 +29,9 @@ export class App {
     this._tripView.addBackHandler(this._goHome.bind(this));
     this._tripView.addActivityHandler(this._addActivitySubmit.bind(this));
     this._tripView.addDeleteHandler(this._removeActivity.bind(this));
-    this._tripView.addEditHandler(this._rerenderTrip.bind(this));
+    this._tripView.addEditHandler(this._renderActiveTrip.bind(this));
     this._tripView.addSaveEditHandler(this._saveActivityEdit.bind(this));
-    this._tripView.addCancelEditHandler(this._rerenderTrip.bind(this));
+    this._tripView.addCancelEditHandler(this._renderActiveTrip.bind(this));
     this._tripView.addFilterHandler(this._setFilter.bind(this));
   }
 
@@ -103,10 +103,6 @@ export class App {
       (a) => a.id !== Number(actID),
     );
     save(this.trips);
-    this._renderActiveTrip();
-  }
-
-  _rerenderTrip() {
     this._renderActiveTrip();
   }
 
