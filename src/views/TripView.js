@@ -11,20 +11,35 @@ export class TripView {
     this._addResultClickHandler();
   }
 
-  render(trip) {
+  render(trip, activeFilter = "All", visibleActivities = null) {
+    this._activeFilter = activeFilter;
     this._countryCode = trip.countryCode;
+
+    const activities = visibleActivities || trip.activities;
+    const types = [...new Set(trip.activities.map((a) => a.type))];
+
     const html = `
     <button class="back-btn">Back</button>
     <h2>${trip.name}</h2>
     <p>${trip.destination}</p>
     <div id="map"></div>
 
+    <div class="filter-pills">
+      <button class="filter-pill ${this._activeFilter === "All" ? "filter-pill--active" : ""}" data-filter="All">All</button>
+      ${types
+        .map(
+          (t) =>
+            `<button class="filter-pill ${this._activeFilter === t ? "filter-pill--active" : ""}" data-filter="${t}">${t}</button>`,
+        )
+        .join("")}
+    </div>
+
     <h3>Activities</h3>
     <div class="activity-list">
         ${
-          trip.activities.length === 0
+          activities.length === 0
             ? "<p>No activities yet</p>"
-            : trip.activities
+            : activities
                 .map((activity) => {
                   const isEditing = activity.id === this._editingId;
 
@@ -237,6 +252,14 @@ export class TripView {
 
       // clear results list
       document.querySelector("#activity-results").innerHTML = "";
+    });
+  }
+
+  addFilterHandler(handler) {
+    this._parentEl.addEventListener("click", (e) => {
+      const pill = e.target.closest(".filter-pill");
+      if (!pill) return;
+      handler(pill.dataset.filter);
     });
   }
 }

@@ -15,6 +15,8 @@ export class App {
     this._tripView = new TripView();
     this._mapView = new MapView();
     this._tripFormEl = document.querySelector("#trip-form");
+
+    this._activeFilter = "All"; // Tag/activity type filtering
     this._init();
   }
 
@@ -30,6 +32,7 @@ export class App {
     this._tripView.addEditHandler(this._rerenderTrip.bind(this));
     this._tripView.addSaveEditHandler(this._saveActivityEdit.bind(this));
     this._tripView.addCancelEditHandler(this._rerenderTrip.bind(this));
+    this._tripView.addFilterHandler(this._setFilter.bind(this));
   }
 
   _addTrip(data) {
@@ -70,9 +73,9 @@ export class App {
 
   _openTrip(tripID) {
     this._activeTrip = this.trips.find((t) => t.id === Number(tripID));
+    this._activeFilter = "All";
     this._tripFormEl.classList.add("hidden");
-    this._tripView.render(this._activeTrip);
-    this._mapView.render(this._activeTrip.activities);
+    this._renderActiveTrip();
   }
 
   _addActivitySubmit(data) {
@@ -92,8 +95,7 @@ export class App {
     act.coords = data.coords || null;
     this._activeTrip.addActivity(act);
     save(this.trips);
-    this._tripView.render(this._activeTrip);
-    this._mapView.render(this._activeTrip.activities);
+    this._renderActiveTrip();
   }
 
   _removeActivity(actID) {
@@ -101,13 +103,11 @@ export class App {
       (a) => a.id !== Number(actID),
     );
     save(this.trips);
-    this._tripView.render(this._activeTrip);
-    this._mapView.render(this._activeTrip.activities);
+    this._renderActiveTrip();
   }
 
   _rerenderTrip() {
-    this._tripView.render(this._activeTrip);
-    this._mapView.render(this._activeTrip.activities);
+    this._renderActiveTrip();
   }
 
   _saveActivityEdit(id, updated) {
@@ -119,12 +119,29 @@ export class App {
     activity.notes = updated.notes;
 
     save(this.trips);
-    this._tripView.render(this._activeTrip);
-    this._mapView.render(this._activeTrip.activities);
+    this._renderActiveTrip();
   }
 
   _goHome() {
     this._tripFormEl.classList.remove("hidden");
     this._dashboard.render(this.trips);
+  }
+
+  _getVisibleActivities() {
+    if (this._activeFilter === "All") return this._activeTrip.activities;
+    return this._activeTrip.activities.filter(
+      (a) => a.type === this._activeFilter,
+    );
+  }
+
+  _setFilter(filter) {
+    this._activeFilter = filter;
+    this._renderActiveTrip();
+  }
+
+  _renderActiveTrip() {
+    const visible = this._getVisibleActivities();
+    this._tripView.render(this._activeTrip, this._activeFilter, visible);
+    this._mapView.render(visible);
   }
 }
