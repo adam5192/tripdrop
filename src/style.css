@@ -30,6 +30,10 @@ body {
   margin: 0 auto;
 }
 
+.hidden {
+  display: none;
+}
+
 /* ---- Headings ---- */
 h2 {
   font-size: 1.6rem;
@@ -55,6 +59,10 @@ h3 {
   border-radius: var(--radius);
   padding: 1.25rem;
   margin-bottom: 1.5rem;
+}
+
+#trip-form.hidden {
+  display: none;
 }
 
 input,

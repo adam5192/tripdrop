@@ -14,6 +14,7 @@ export class App {
     this._form = new FormView();
     this._tripView = new TripView();
     this._mapView = new MapView();
+    this._tripFormEl = document.querySelector("#trip-form");
     this._init();
   }
 
@@ -41,7 +42,7 @@ export class App {
     }
     if (!data.start || !data.end) {
       this._form.showError("Please select both start and end dates");
-      returnl;
+      return;
     }
     if (new Date(data.end) < new Date(data.start)) {
       this._form.showError("End data can't be before start date!");
@@ -69,6 +70,7 @@ export class App {
 
   _openTrip(tripID) {
     this._activeTrip = this.trips.find((t) => t.id === Number(tripID));
+    this._tripFormEl.classList.add("hidden");
     this._tripView.render(this._activeTrip);
     this._mapView.render(this._activeTrip.activities);
   }
@@ -122,6 +124,7 @@ export class App {
   }
 
   _goHome() {
+    this._tripFormEl.classList.remove("hidden");
     this._dashboard.render(this.trips);
   }
 }
