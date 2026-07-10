@@ -6,6 +6,7 @@ import { DashboardView } from "./views/DashboardView.js";
 import { FormView } from "./views/FormView.js";
 import { TripView } from "./views/TripView.js";
 import { MapView } from "./views/MapView.js";
+import { ModalView } from "./views/ModalView.js";
 
 export class App {
   constructor() {
@@ -14,6 +15,7 @@ export class App {
     this._form = new FormView();
     this._tripView = new TripView();
     this._mapView = new MapView();
+    this._modal = new ModalView();
     this._tripFormEl = document.querySelector("#trip-form");
 
     this._activeFilter = "All"; // Tag/activity type filtering
@@ -65,7 +67,13 @@ export class App {
     this._dashboard.render(this.trips);
   }
 
-  _removeTrip(tripID) {
+  async _removeTrip(tripID) {
+    const trip = this.trips.find((t) => t.id === Number(tripID));
+    const confirmed = await this._modal.confirm(
+      `Delete "${trip.name}"? This can't be undone.`,
+    );
+    if (!confirmed) return;
+
     this.trips = this.trips.filter((t) => t.id !== Number(tripID));
     save(this.trips);
     this._dashboard.render(this.trips);
@@ -98,7 +106,13 @@ export class App {
     this._renderActiveTrip();
   }
 
-  _removeActivity(actID) {
+  async _removeActivity(actID) {
+    const activity = this._activeTrip.activities.find(
+      (a) => a.id === Number(actID),
+    );
+    const confirmed = await this._modal.confirm(`Delete "${activity.name}"?`);
+    if (!confirmed) return;
+
     this._activeTrip.activities = this._activeTrip.activities.filter(
       (a) => a.id !== Number(actID),
     );

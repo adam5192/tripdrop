@@ -34,6 +34,15 @@
     <p id="trip-form-error" class="form-error"></p>
 
     <div id="app"></div>
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div class="modal">
+        <p id="modal-message" class="modal__message"></p>
+        <div class="modal__actions">
+          <button id="modal-cancel" class="modal__cancel">Cancel</button>
+          <button id="modal-confirm" class="modal__confirm">Delete</button>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

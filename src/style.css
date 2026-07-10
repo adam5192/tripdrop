@@ -450,3 +450,61 @@ input::placeholder {
   border-color: var(--accent);
   color: #fff;
 }
+
+/* ---- Confirm delete modal ---- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.modal__message {
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+}
+
+.modal__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.modal__cancel,
+.modal__confirm {
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+
+.modal__cancel {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.modal__confirm {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
