@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="src/style.css" />
   </head>
   <body>
+    <header class="app-header">
+      <h1 class="app-title">TripDrop</h1>
+      <div id="auth-area" class="auth-area">
+        <!-- filled by JS depending on auth state -->
+      </div>
+    </header>
     <form id="trip-form">
-      <input
-        type="text"
-        id="trip-name"
-        placeholder="Trip name"
-        autocomplete="off"
-      />
+      <input type="text" id="trip-name" placeholder="Trip name" autocomplete="off" />
       <!-- <input type="text" id="trip-destination" placeholder="Destination" /> -->
       <div class="search-wrap">
         <input
@@ -41,6 +42,24 @@
           <button id="modal-cancel" class="modal__cancel">Cancel</button>
           <button id="modal-confirm" class="modal__confirm">Delete</button>
         </div>
+      </div>
+    </div>
+    <div id="auth-modal" class="modal-overlay hidden">
+      <div class="modal">
+        <h2 id="auth-modal-title">Sign in</h2>
+        <input type="email" id="auth-email" placeholder="Email" autocomplete="off" />
+        <input type="password" id="auth-password" placeholder="Password" autocomplete="off" />
+        <p id="auth-error" class="form-error"></p>
+        <div class="modal__actions">
+          <button id="auth-cancel" class="modal__cancel">Cancel</button>
+          <button id="auth-submit" class="modal__confirm modal__confirm--primary">Sign in</button>
+        </div>
+        <p class="auth-toggle">
+          <span id="auth-toggle">
+            <span id="auth-toggle-text">Don't have an account?</span>
+            <button id="auth-toggle-btn" class="link-btn">Sign up</button>
+          </span>
+        </p>
       </div>
     </div>
     <script type="module" src="/src/main.js"></script>

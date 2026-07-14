@@ -7,11 +7,14 @@ import { FormView } from "./views/FormView.js";
 import { TripView } from "./views/TripView.js";
 import { MapView } from "./views/MapView.js";
 import { ModalView } from "./views/ModalView.js";
+import { AuthView } from "./views/AuthView.js";
+import { getCurrentUser } from "./data/auth.js";
 
 export class App {
   constructor() {
     this.trips = load();
     this._dashboard = new DashboardView();
+    this._authView = new AuthView();
     this._form = new FormView();
     this._tripView = new TripView();
     this._mapView = new MapView();
@@ -22,7 +25,7 @@ export class App {
     this._init();
   }
 
-  _init() {
+  async _init() {
     // Render the dashboard with this.trips
     this._dashboard.render(this.trips);
     this._form.addHandler(this._addTrip.bind(this));
@@ -35,6 +38,15 @@ export class App {
     this._tripView.addSaveEditHandler(this._saveActivityEdit.bind(this));
     this._tripView.addCancelEditHandler(this._renderActiveTrip.bind(this));
     this._tripView.addFilterHandler(this._setFilter.bind(this));
+    this._authView.addSignInHandler(() => this._authView.openModal());
+    this._authView.addSignOutHandler(this._handleSignOut.bind(this));
+    this._authView.addModalHandlers({
+      onSubmit: this._handleAuthSubmit.bind(this),
+      onToggle: () => {},
+    });
+
+    const user = await getCurrentUser();
+    this._authView.renderAuthArea(user);
   }
 
   _addTrip(data) {
@@ -55,13 +67,7 @@ export class App {
     }
 
     // Create trip once validation passed
-    const trip = new Trip(
-      data.name,
-      data.destination,
-      data.start,
-      data.end,
-      data.countryCode,
-    );
+    const trip = new Trip(data.name, data.destination, data.start, data.end, data.countryCode);
     this.trips.push(trip);
     save(this.trips);
     this._dashboard.render(this.trips);
@@ -69,9 +75,7 @@ export class App {
 
   async _removeTrip(tripID) {
     const trip = this.trips.find((t) => t.id === Number(tripID));
-    const confirmed = await this._modal.confirm(
-      `Delete "${trip.name}"? This can't be undone.`,
-    );
+    const confirmed = await this._modal.confirm(`Delete "${trip.name}"? This can't be undone.`);
     if (!confirmed) return;
 
     this.trips = this.trips.filter((t) => t.id !== Number(tripID));
@@ -88,18 +92,11 @@ export class App {
 
   _addActivitySubmit(data) {
     if (!data.name.trim()) {
-      document.querySelector("#activity-form-error").textContent =
-        "Please enter an activity!";
+      document.querySelector("#activity-form-error").textContent = "Please enter an activity!";
       return;
     }
 
-    const act = new Activity(
-      data.type,
-      data.name,
-      data.city,
-      Number(data.rating),
-      data.notes,
-    );
+    const act = new Activity(data.type, data.name, data.city, Number(data.rating), data.notes);
     act.coords = data.coords || null;
     this._activeTrip.addActivity(act);
     save(this.trips);
@@ -107,15 +104,11 @@ export class App {
   }
 
   async _removeActivity(actID) {
-    const activity = this._activeTrip.activities.find(
-      (a) => a.id === Number(actID),
-    );
+    const activity = this._activeTrip.activities.find((a) => a.id === Number(actID));
     const confirmed = await this._modal.confirm(`Delete "${activity.name}"?`);
     if (!confirmed) return;
 
-    this._activeTrip.activities = this._activeTrip.activities.filter(
-      (a) => a.id !== Number(actID),
-    );
+    this._activeTrip.activities = this._activeTrip.activities.filter((a) => a.id !== Number(actID));
     save(this.trips);
     this._renderActiveTrip();
   }
@@ -139,9 +132,7 @@ export class App {
 
   _getVisibleActivities() {
     if (this._activeFilter === "All") return this._activeTrip.activities;
-    return this._activeTrip.activities.filter(
-      (a) => a.type === this._activeFilter,
-    );
+    return this._activeTrip.activities.filter((a) => a.type === this._activeFilter);
   }
 
   _setFilter(filter) {
@@ -153,5 +144,21 @@ export class App {
     const visible = this._getVisibleActivities();
     this._tripView.render(this._activeTrip, this._activeFilter, visible);
     this._mapView.render(visible);
+  }
+
+  async _handleSignOut() {
+    await signOut();
+    this._authView.renderAuthArea(null);
+  }
+
+  async _handleAuthSubmit(email, password, isSignUp) {
+    try {
+      const user = isSignUp ? await signUp(email, password) : await signIn(email, password);
+
+      this._authView.closeModal();
+      this._authView.renderAuthArea(user);
+    } catch (err) {
+      this._authView.showError(err.message);
+    }
   }
 }
