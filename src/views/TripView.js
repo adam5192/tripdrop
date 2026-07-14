@@ -46,7 +46,7 @@ export class TripView {
                   if (isEditing) {
                     return `
         <div class="activity-card activity-card--editing" data-id="${activity.id}">
-          <input class="edit-name" value="${activity.name}" placeholder="Name" />
+          <input class="edit-name" value="${activity.name.split(",")[0]}" placeholder="Name" />
 
           <select class="edit-type">
             <option value="" selected disabled>Activity type</option>
@@ -73,7 +73,7 @@ export class TripView {
                   return `
       <div class="activity-card" data-id="${activity.id}">
         <div class="activity-card__header">
-          <span class="activity-card__name">${activity.name}</span>
+          <span class="activity-card__name">${activity.name.split(",")[0]}</span>
           <span class="activity-card__type">${activity.type}</span>
         </div>
         <div class="activity-card__meta">
@@ -223,7 +223,7 @@ export class TripView {
               const name = r.display_name.split(",")[0];
               const rest = r.display_name.split(",").slice(1).join(",").trim();
               return `
-              <li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${r.display_name}" data-city="${city}">
+              <li data-lat="${r.lat}" data-lon="${r.lon}" data-name="${name}" data-city="${city}">
                 <span class="result-name">${name}</span>
                 <span class="result-address">${rest}</span>
               </li>

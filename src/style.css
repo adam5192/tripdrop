@@ -512,3 +512,17 @@ input::placeholder {
   color: #fff;
   border-color: var(--danger);
 }
+
+/* ---- Input date stuff ---- */
+input[type="date"] {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
