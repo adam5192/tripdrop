@@ -8,7 +8,7 @@ export class DashboardView {
   }
 
   render(trips) {
-    const html = trips
+    const cards = trips
       .map((trip) => {
         return `
                 <div class="trip-card" data-id="${trip.id}">
@@ -23,6 +23,7 @@ export class DashboardView {
       })
       .join("");
 
+    const html = `<div class="trip-grid">${cards}</div>`;
     this._parentEl.innerHTML = ""; // clear old content
     this._parentEl.insertAdjacentHTML("beforeend", html);
   }

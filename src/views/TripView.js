@@ -102,8 +102,8 @@ export class TripView {
             <option value="Activity">Activity</option>
             <option value="Other">Other</option>
         </select>
-        <input type="text" id="activity-name" placeholder="Activity" />
-        <input type="text" id="activity-city" placeholder="City" />
+        <input type="text" id="activity-name" placeholder="Activity" autocomplete="off"/>
+        <input type="text" id="activity-city" placeholder="City" autocomplete="off"/>
         <select name="rating" id="activity-rating">
             <option value="" selected disabled>Select a rating</option>
             <option value="1">1★</option>
@@ -112,7 +112,7 @@ export class TripView {
             <option value="4">4★</option>
             <option value="5">5★</option>
         </select>
-        <input type="text" id="activity-notes" placeholder='notes' />
+        <input type="text" id="activity-notes" placeholder='notes' autocomplete="off"/>
         <button type="submit" class='add-act-btn'>Add activity</button>
     </form>
     <p id="activity-form-error" class="form-error"></p>
