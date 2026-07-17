@@ -8,8 +8,11 @@ export class ModalView {
     this._cancelBtn = document.querySelector("#modal-cancel");
   }
 
-  confirm(message) {
+  confirm(message, { confirmText = "Delete", danger = true } = {}) {
     this._message.textContent = message;
+    this._confirmBtn.textContent = confirmText;
+    this._confirmBtn.classList.toggle("modal__confirm--primary", !danger);
+
     this._overlay.classList.remove("hidden");
 
     return new Promise((resolve) => {

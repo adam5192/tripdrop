@@ -109,3 +109,28 @@ export async function editActivity(activityId, updates, allTrips) {
   }
   await db.updateActivity(activityId, updates);
 }
+
+export async function migrateLocalToDb() {
+  const local = loadLocal();
+  if (local.length === 0) return 0;
+
+  for (const trip of local) {
+    // insert the trip, get back the DB row with its new UUID
+    const row = await db.insertTrip(trip);
+
+    // insert each of its activities against the new trip id
+    for (const act of trip.activities) {
+      await db.insertActivity(row.id, act);
+    }
+  }
+
+  // clear local storage now that it's uploaded
+  localStorage.removeItem("trips");
+  return local.length;
+}
+
+export function hasLocalTrips() {
+  const data = localStorage.getItem("trips");
+  if (!data) return false;
+  return JSON.parse(data).length > 0;
+}

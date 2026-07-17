@@ -1,7 +1,16 @@
 "use strict";
 import { Trip } from "./model/Trip.js";
 import { Activity } from "./model/Activity.js";
-import { load, addTrip, removeTrip, addActivity, removeActivity, editActivity } from "./data/store.js";
+import {
+  load,
+  addTrip,
+  removeTrip,
+  addActivity,
+  removeActivity,
+  editActivity,
+  hasLocalTrips,
+  migrateLocalToDb,
+} from "./data/store.js";
 import { DashboardView } from "./views/DashboardView.js";
 import { FormView } from "./views/FormView.js";
 import { TripView } from "./views/TripView.js";
@@ -98,6 +107,7 @@ export class App {
   _openTrip(tripID) {
     this._activeTrip = this.trips.find((t) => String(t.id) === String(tripID));
     this._activeFilter = "All";
+    this._form.clearError();
     this._tripFormEl.classList.add("hidden");
     this._renderActiveTrip();
   }
@@ -187,7 +197,17 @@ export class App {
       this._authView.closeModal();
       this._authView.renderAuthArea(user);
 
-      // reload trips for signed-in mode (database)
+      // offer to migrate local trips
+      if (hasLocalTrips()) {
+        const confirmed = await this._modal.confirm(
+          "You have trips saved on this device. Upload them to your account?",
+        );
+        if (confirmed) {
+          await migrateLocalToDb();
+        }
+      }
+
+      // load trips for signed-in mode
       this.trips = await load();
       this._dashboard.render(this.trips);
     } catch (err) {
