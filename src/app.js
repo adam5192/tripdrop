@@ -8,7 +8,7 @@ import { TripView } from "./views/TripView.js";
 import { MapView } from "./views/MapView.js";
 import { ModalView } from "./views/ModalView.js";
 import { AuthView } from "./views/AuthView.js";
-import { getCurrentUser } from "./data/auth.js";
+import { getCurrentUser, signIn, signUp, signOut } from "./data/auth.js";
 
 export class App {
   constructor() {
