@@ -1,6 +1,6 @@
 import { supabase } from "./supabase.js";
 
-// Fetch all trips from current user
+// Fetch all trips (with their activities) for the current user
 export async function fetchTrips() {
   const { data, error } = await supabase
     .from("trips")
@@ -39,7 +39,7 @@ export async function deleteTrip(tripId) {
   if (error) throw error;
 }
 
-// Insert activitiy for a trip
+// Insert an activity for a trip, return the created row
 export async function insertActivity(tripId, activity) {
   const { data, error } = await supabase
     .from("activities")
@@ -59,7 +59,7 @@ export async function insertActivity(tripId, activity) {
   return data;
 }
 
-// Delete activity
+// Delete an activity
 export async function deleteActivity(activityId) {
   const { error } = await supabase.from("activities").delete().eq("id", activityId);
   if (error) throw error;

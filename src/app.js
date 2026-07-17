@@ -1,7 +1,7 @@
 "use strict";
 import { Trip } from "./model/Trip.js";
 import { Activity } from "./model/Activity.js";
-import { save, load } from "./data/store.js";
+import { load, addTrip, removeTrip, addActivity, removeActivity, editActivity } from "./data/store.js";
 import { DashboardView } from "./views/DashboardView.js";
 import { FormView } from "./views/FormView.js";
 import { TripView } from "./views/TripView.js";
@@ -12,7 +12,7 @@ import { getCurrentUser, signIn, signUp, signOut } from "./data/auth.js";
 
 export class App {
   constructor() {
-    this.trips = load();
+    this.trips = [];
     this._dashboard = new DashboardView();
     this._authView = new AuthView();
     this._form = new FormView();
@@ -21,12 +21,11 @@ export class App {
     this._modal = new ModalView();
     this._tripFormEl = document.querySelector("#trip-form");
 
-    this._activeFilter = "All"; // Tag/activity type filtering
+    this._activeFilter = "All";
     this._init();
   }
 
   async _init() {
-    // Render the dashboard with this.trips
     this._dashboard.render(this.trips);
     this._form.addHandler(this._addTrip.bind(this));
     this._dashboard.addDeleteHandler(this._removeTrip.bind(this));
@@ -47,10 +46,13 @@ export class App {
 
     const user = await getCurrentUser();
     this._authView.renderAuthArea(user);
+
+    // load trips (async — routes to DB or localStorage)
+    this.trips = await load();
+    this._dashboard.render(this.trips);
   }
 
-  _addTrip(data) {
-    // Clear previous errors
+  async _addTrip(data) {
     this._form.clearError();
 
     if (!data.name.trim()) {
@@ -62,35 +64,45 @@ export class App {
       return;
     }
     if (new Date(data.end) < new Date(data.start)) {
-      this._form.showError("End data can't be before start date!");
+      this._form.showError("End date can't be before start date!");
       return;
     }
 
-    // Create trip once validation passed
     const trip = new Trip(data.name, data.destination, data.start, data.end, data.countryCode);
-    this.trips.push(trip);
-    save(this.trips);
-    this._dashboard.render(this.trips);
+
+    try {
+      const savedTrip = await addTrip(trip, [...this.trips, trip]);
+      this.trips.push(savedTrip);
+      this._dashboard.render(this.trips);
+    } catch (err) {
+      this._form.showError("Couldn't save trip — try again");
+      console.error(err);
+    }
   }
 
   async _removeTrip(tripID) {
-    const trip = this.trips.find((t) => t.id === Number(tripID));
+    const trip = this.trips.find((t) => String(t.id) === String(tripID));
     const confirmed = await this._modal.confirm(`Delete "${trip.name}"? This can't be undone.`);
     if (!confirmed) return;
 
-    this.trips = this.trips.filter((t) => t.id !== Number(tripID));
-    save(this.trips);
-    this._dashboard.render(this.trips);
+    this.trips = this.trips.filter((t) => String(t.id) !== String(tripID));
+
+    try {
+      await removeTrip(tripID, this.trips);
+      this._dashboard.render(this.trips);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   _openTrip(tripID) {
-    this._activeTrip = this.trips.find((t) => t.id === Number(tripID));
+    this._activeTrip = this.trips.find((t) => String(t.id) === String(tripID));
     this._activeFilter = "All";
     this._tripFormEl.classList.add("hidden");
     this._renderActiveTrip();
   }
 
-  _addActivitySubmit(data) {
+  async _addActivitySubmit(data) {
     if (!data.name.trim()) {
       document.querySelector("#activity-form-error").textContent = "Please enter an activity!";
       return;
@@ -98,31 +110,45 @@ export class App {
 
     const act = new Activity(data.type, data.name, data.city, Number(data.rating), data.notes);
     act.coords = data.coords || null;
-    this._activeTrip.addActivity(act);
-    save(this.trips);
-    this._renderActiveTrip();
+
+    try {
+      const savedAct = await addActivity(this._activeTrip.id, act, this.trips);
+      this._activeTrip.addActivity(savedAct);
+      this._renderActiveTrip();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async _removeActivity(actID) {
-    const activity = this._activeTrip.activities.find((a) => a.id === Number(actID));
+    const activity = this._activeTrip.activities.find((a) => String(a.id) === String(actID));
     const confirmed = await this._modal.confirm(`Delete "${activity.name}"?`);
     if (!confirmed) return;
 
-    this._activeTrip.activities = this._activeTrip.activities.filter((a) => a.id !== Number(actID));
-    save(this.trips);
-    this._renderActiveTrip();
+    this._activeTrip.activities = this._activeTrip.activities.filter((a) => String(a.id) !== String(actID));
+
+    try {
+      await removeActivity(actID, this.trips);
+      this._renderActiveTrip();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  _saveActivityEdit(id, updated) {
-    const activity = this._activeTrip.activities.find((a) => a.id === id);
+  async _saveActivityEdit(id, updated) {
+    const activity = this._activeTrip.activities.find((a) => String(a.id) === String(id));
 
     activity.name = updated.name;
     activity.type = updated.type;
     activity.rating = updated.rating;
     activity.notes = updated.notes;
 
-    save(this.trips);
-    this._renderActiveTrip();
+    try {
+      await editActivity(id, updated, this.trips);
+      this._renderActiveTrip();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   _goHome() {
@@ -149,6 +175,9 @@ export class App {
   async _handleSignOut() {
     await signOut();
     this._authView.renderAuthArea(null);
+    // reload trips for anonymous mode (localStorage)
+    this.trips = await load();
+    this._dashboard.render(this.trips);
   }
 
   async _handleAuthSubmit(email, password, isSignUp) {
@@ -157,6 +186,10 @@ export class App {
 
       this._authView.closeModal();
       this._authView.renderAuthArea(user);
+
+      // reload trips for signed-in mode (database)
+      this.trips = await load();
+      this._dashboard.render(this.trips);
     } catch (err) {
       this._authView.showError(err.message);
     }

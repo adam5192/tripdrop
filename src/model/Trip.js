@@ -1,12 +1,5 @@
 export class Trip {
-  constructor(
-    name,
-    destination,
-    start,
-    end,
-    countryCode = "",
-    status = "planned",
-  ) {
+  constructor(name, destination, start, end, countryCode = "", status = "planned") {
     this.id = Date.now();
     this.name = name;
     this.destination = destination;
