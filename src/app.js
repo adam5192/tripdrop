@@ -18,6 +18,7 @@ import { MapView } from "./views/MapView.js";
 import { ModalView } from "./views/ModalView.js";
 import { AuthView } from "./views/AuthView.js";
 import { getCurrentUser, signIn, signUp, signOut } from "./data/auth.js";
+import { signInWithGoogle } from "./data/auth.js";
 
 export class App {
   constructor() {
@@ -52,6 +53,7 @@ export class App {
       onSubmit: this._handleAuthSubmit.bind(this),
       onToggle: () => {},
     });
+    this._authView.addGoogleHandler(this._handleGoogleSignIn.bind(this));
 
     const user = await getCurrentUser();
     this._authView.renderAuthArea(user);
@@ -218,6 +220,15 @@ export class App {
       // load trips for signed-in mode
       this.trips = await load();
       this._dashboard.render(this.trips);
+    } catch (err) {
+      this._authView.showError(err.message);
+    }
+  }
+
+  async _handleGoogleSignIn() {
+    try {
+      await signInWithGoogle();
+      // the page redirects to Google, so nothing after this runs immediately
     } catch (err) {
       this._authView.showError(err.message);
     }

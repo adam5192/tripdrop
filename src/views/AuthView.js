@@ -100,4 +100,8 @@ export class AuthView {
       onSubmit(email, password, this._isSignUpMode);
     });
   }
+
+  addGoogleHandler(handler) {
+    document.querySelector("#google-signin").addEventListener("click", handler);
+  }
 }
