@@ -211,6 +211,7 @@ export class App {
       if (hasLocalTrips()) {
         const confirmed = await this._modal.confirm(
           "You have trips saved on this device. Upload them to your account?",
+          { confirmText: "Upload", danger: false },
         );
         if (confirmed) {
           await migrateLocalToDb();
