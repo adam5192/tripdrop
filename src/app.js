@@ -19,6 +19,7 @@ import { ModalView } from "./views/ModalView.js";
 import { AuthView } from "./views/AuthView.js";
 import { getCurrentUser, signIn, signUp, signOut } from "./data/auth.js";
 import { signInWithGoogle } from "./data/auth.js";
+import { supabase } from "./data/supabase.js";
 
 export class App {
   constructor() {
@@ -58,9 +59,30 @@ export class App {
     const user = await getCurrentUser();
     this._authView.renderAuthArea(user);
 
-    // load trips (async — routes to DB or localStorage)
+    this._authReady = false;
+
+    // Handles EMAIL sign-in (fires SIGNED_IN while the app is already running).
+    // Google sign-in returns via a full page reload and is handled below instead.
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && this._authReady) {
+        await this._handlePostSignIn(session.user);
+      }
+    });
+
+    // Load trips (routes to DB or localStorage)
     this.trips = await load();
     this._dashboard.render(this.trips);
+
+    this._authReady = true;
+
+    // Handles GOOGLE sign-in return. OAuth comes back as a page reload, which
+    // Supabase reports as INITIAL_SESSION (not SIGNED_IN), so  detect it via
+    // a flag set before the redirect. By now the session is fully established.
+    const pendingGoogle = sessionStorage.getItem("pending-google-signin");
+    if (pendingGoogle) {
+      sessionStorage.removeItem("pending-google-signin");
+      if (user) await this._handlePostSignIn(user);
+    }
   }
 
   async _addTrip(data) {
@@ -199,28 +221,11 @@ export class App {
         if (needsConfirmation) {
           this._authView.showMessage("Check your email to confirm your account, then sign in.");
           return;
-          // if confirmation is off, fall through to sign in
         }
       }
-
-      const user = await signIn(email, password);
+      await signIn(email, password);
       this._authView.closeModal();
-      this._authView.renderAuthArea(user);
-
-      // offer to migrate local trips
-      if (hasLocalTrips()) {
-        const confirmed = await this._modal.confirm(
-          "You have trips saved on this device. Upload them to your account?",
-          { confirmText: "Upload", danger: false },
-        );
-        if (confirmed) {
-          await migrateLocalToDb();
-        }
-      }
-
-      // load trips for signed-in mode
-      this.trips = await load();
-      this._dashboard.render(this.trips);
+      // migration + reload now handled by onAuthStateChange
     } catch (err) {
       this._authView.showError(err.message);
     }
@@ -228,10 +233,27 @@ export class App {
 
   async _handleGoogleSignIn() {
     try {
+      sessionStorage.setItem("pending-google-signin", "true");
       await signInWithGoogle();
-      // the page redirects to Google, so nothing after this runs immediately
     } catch (err) {
+      sessionStorage.removeItem("pending-google-signin");
       this._authView.showError(err.message);
     }
+  }
+
+  async _handlePostSignIn(user) {
+    this._authView.closeModal(); // ensure auth modal is gone first
+    this._authView.renderAuthArea(user);
+
+    if (hasLocalTrips()) {
+      const confirmed = await this._modal.confirm("You have trips saved on this device. Upload them to your account?", {
+        confirmText: "Upload",
+        danger: false,
+      });
+      if (confirmed) await migrateLocalToDb();
+    }
+
+    this.trips = await load();
+    this._dashboard.render(this.trips);
   }
 }
