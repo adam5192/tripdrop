@@ -3,7 +3,10 @@ import { supabase } from "./supabase.js";
 export async function signUp(email, password) {
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) throw error;
-  return data.user;
+
+  // if email confirmation is on, there is a user but no session yet
+  const needsConfirmation = data.user && !data.session;
+  return { user: data.user, needsConfirmation };
 }
 
 export async function signIn(email, password) {

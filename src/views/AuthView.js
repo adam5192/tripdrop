@@ -23,6 +23,7 @@ export class AuthView {
   openModal() {
     this._modal.classList.remove("hidden");
     document.querySelector("#auth-error").textContent = "";
+    document.querySelector("#auth-error").classList.remove("auth-message--info");
   }
 
   closeModal() {
@@ -31,8 +32,16 @@ export class AuthView {
     document.querySelector("#auth-password").textContent = "";
   }
 
+  showMessage(message) {
+    const errEl = document.querySelector("#auth-error");
+    errEl.textContent = message;
+    errEl.classList.add("auth-message--info");
+  }
+
   showError(message) {
-    document.querySelector("#auth-error").textContent = message;
+    const errEl = document.querySelector("#auth-error");
+    errEl.textContent = message;
+    errEl.classList.add("auth-message--info");
   }
 
   get isSignUpMode() {

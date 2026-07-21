@@ -603,6 +603,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   border-color: var(--accent-hover);
 }
 
+.auth-message--info {
+  color: var(--accent) !important;
+}
+
 /* ---- Sign in / sign up toggle line ---- */
 .auth-toggle {
   margin-top: 1rem;

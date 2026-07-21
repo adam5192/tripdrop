@@ -192,8 +192,16 @@ export class App {
 
   async _handleAuthSubmit(email, password, isSignUp) {
     try {
-      const user = isSignUp ? await signUp(email, password) : await signIn(email, password);
+      if (isSignUp) {
+        const { needsConfirmation } = await signUp(email, password);
+        if (needsConfirmation) {
+          this._authView.showMessage("Check your email to confirm your account, then sign in.");
+          return;
+          // if confirmation is off, fall through to sign in
+        }
+      }
 
+      const user = await signIn(email, password);
       this._authView.closeModal();
       this._authView.renderAuthArea(user);
 
