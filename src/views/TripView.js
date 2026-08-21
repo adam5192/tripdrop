@@ -2,6 +2,15 @@
 
 import { searchPlaces } from "../data/geocode";
 
+// icon shown on each activity card, keyed by activity type
+const ACTIVITY_ICONS = {
+  Food: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v8a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M17 2c-1.5 3-2 5-2 8 0 2 1 3 2 3s2-1 2-3c0-3-.5-5-2-8z"></path><path d="M17 13v9"></path></svg>`,
+  Attraction: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V9l7-5 7 5v12"></path><path d="M9 21v-6h6v6"></path></svg>`,
+  Hike: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21l4-13 3 6 2-3 3 10"></path><path d="M2 21h20"></path></svg>`,
+  Activity: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>`,
+  Other: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`,
+};
+
 export class TripView {
   constructor() {
     this._parentEl = document.querySelector("#app");
@@ -70,19 +79,24 @@ export class TripView {
         </div>`;
                   }
 
+                  const iconClass = activity.type.toLowerCase();
+
                   return `
       <div class="activity-card" data-id="${activity.id}">
-        <div class="activity-card__header">
-          <span class="activity-card__name">${activity.name.split(",")[0]}</span>
-          <span class="activity-card__type">${activity.type}</span>
+        <div class="activity-card__icon activity-card__icon--${iconClass}">${ACTIVITY_ICONS[activity.type] || ACTIVITY_ICONS.Other}</div>
+        <div class="activity-card__body">
+          <div class="activity-card__header">
+            <span class="activity-card__name">${activity.name.split(",")[0]}</span>
+            <span class="activity-card__type">${activity.type}</span>
+          </div>
+          <div class="activity-card__meta">
+            <span class="activity-card__city">${activity.city}</span>
+            <span class="activity-card__rating">${"★".repeat(activity.rating)}</span>
+          </div>
+          ${activity.notes ? `<p class="activity-card__notes">${activity.notes}</p>` : ""}
+          <button class="edit-btn" data-id="${activity.id}">Edit</button>
+          <button class="activity-card__delete delete-act-btn" data-id="${activity.id}">Delete</button>
         </div>
-        <div class="activity-card__meta">
-          <span class="activity-card__city">${activity.city}</span>
-          <span class="activity-card__rating">${"★".repeat(activity.rating)}</span>
-        </div>
-        ${activity.notes ? `<p class="activity-card__notes">${activity.notes}</p>` : ""}
-        <button class="edit-btn" data-id="${activity.id}">Edit</button>
-        <button class="activity-card__delete delete-act-btn" data-id="${activity.id}">Delete</button>
       </div>`;
                 })
                 .join("")

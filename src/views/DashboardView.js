@@ -1,6 +1,6 @@
 "use strict";
 
-import { formatDate } from "../helpers/utils";
+import { formatDate, bandIndex } from "../helpers/utils";
 
 export class DashboardView {
   constructor() {
@@ -12,12 +12,17 @@ export class DashboardView {
       .map((trip) => {
         return `
                 <div class="trip-card" data-id="${trip.id}">
-                    <div class="trip-card__header">
-                        <h3 class="trip-card__name">${trip.name}</h3>
-                        <h3 class="trip-card__count">${trip.activities.length} activities</h3>
+                    <div class="trip-card__band trip-card__band--${bandIndex(trip.id)}"></div>
+                    <div class="trip-card__body">
+                        <div class="trip-card__header">
+                            <h3 class="trip-card__name">${trip.name}</h3>
+                            <h3 class="trip-card__count">${trip.activities.length} activities</h3>
+                        </div>
+                        <p class="trip-card__dates">${formatDate(trip.start)} - ${formatDate(trip.end)}</p>
+                        <div class="trip-card__foot">
+                            <button class="trip-card__delete delete-btn" data-id="${trip.id}">Delete</button>
+                        </div>
                     </div>
-                    <p class="trip-card__dates">${formatDate(trip.start)} - ${formatDate(trip.end)}</p>
-                    <button class="trip-card__delete delete-btn" data-id="${trip.id}">Delete</button>
                 </div>
             `;
       })
